@@ -524,11 +524,23 @@ class FeedConnector implements FeedPlugin {
      */
     protected function getDeliveryTime()
     {
+        $result = "";
         $deliveryTimeType = array('days' =>'D','months'=>'M','weeks'=>'W', );
         $from = $this->feedRows['FEED_DTIME_FROM'];
         $to = $this->feedRows['FEED_DTIME_TO'] ;
         $type = $this->feedRows['FEED_DTIME_TYPE'];
-        $result =  $from.'_'.$to.'_'.$deliveryTimeType[$type];
+        if($from != null and $to != null){
+            if($from == $to){
+                $result =  $from . "_" .$deliveryTimeType[$type]; 
+            } else {
+                $result =  $from.'_'.$to.'_'.$deliveryTimeType[$type];
+            }
+            return $result;
+        } 
+        if($from != null){
+            $result =  $from . "_" .$deliveryTimeType[$type];
+        }
+        
 
         return $result;
     }
@@ -942,7 +954,7 @@ class FeedConnector implements FeedPlugin {
         $host =   $_SERVER['HTTP_HOST'];
         $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
         $file = '/feed.php';
-        
+
         return $protocol.$host.$file;
     }
 
