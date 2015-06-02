@@ -272,13 +272,11 @@ class FeedConnector implements FeedPlugin {
                     foreach ($this->productResources['allCombinations'][$item['products_id']] as $element) {
                         $row = null;
                         $row = $this->_getFeedRow($fieldMap, $this->productResources['attrValues'],$queryParameters, $item['products_id'], $element) ;
-                        //fputcsv($csv_file, $row, ';', '"');
-                        var_dump($row);
+                        fputcsv($csv_file, $row, ';', '"');
                     }
                 } else {
                     $row = $this->_getFeedRow($fieldMap, $this->productResources['attrValues'], $queryParameters, $item['products_id'], null) ;
-                    //fputcsv($csv_file, $row, ';', '"');
-                    var_dump($row);
+                    fputcsv($csv_file, $row, ';', '"');
 
                 }
                 $count ++;
