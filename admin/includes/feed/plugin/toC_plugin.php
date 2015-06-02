@@ -251,10 +251,10 @@ class FeedConnector implements FeedPlugin {
         //global ShoppingCart object for get delivery price
         $this->_saveCartContents();
 
-        header('Content-Encoding: UTF-8');
+        /*header('Content-Encoding: UTF-8');
         header("Content-type: text/csv; charset=UTF-8");
         header('Content-Disposition: attachment; filename=feedExport.csv');
-        mb_internal_encoding("UTF-8");
+        mb_internal_encoding("UTF-8");*/
         $csv_file = fopen("php://output", 'w+');
 
         if(!$csv_file) { echo 'File Error'; exit(); }
@@ -264,6 +264,7 @@ class FeedConnector implements FeedPlugin {
         $helper = new PluginResources();
         do{
             $this->productResources = $helper->getProductsResources($queryParameters, $limit, $offset);
+
             $count = 0 ;
             foreach ($this->productResources['products'] as $item) {
                 if(array_key_exists($item['products_id'], $this->productResources['allCombinations'])){
@@ -271,11 +272,14 @@ class FeedConnector implements FeedPlugin {
                     foreach ($this->productResources['allCombinations'][$item['products_id']] as $element) {
                         $row = null;
                         $row = $this->_getFeedRow($fieldMap, $this->productResources['attrValues'],$queryParameters, $item['products_id'], $element) ;
-                        fputcsv($csv_file, $row, ';', '"');
+                        //fputcsv($csv_file, $row, ';', '"');
+                        var_dump($row);
                     }
                 } else {
                     $row = $this->_getFeedRow($fieldMap, $this->productResources['attrValues'], $queryParameters, $item['products_id'], null) ;
-                    fputcsv($csv_file, $row, ';', '"');
+                    //fputcsv($csv_file, $row, ';', '"');
+                    var_dump($row);
+
                 }
                 $count ++;
             }
@@ -531,16 +535,16 @@ class FeedConnector implements FeedPlugin {
         $type = $this->feedRows['FEED_DTIME_TYPE'];
         if($from != null and $to != null){
             if($from == $to){
-                $result =  $from . "_" .$deliveryTimeType[$type]; 
+                $result =  $from . "_" .$deliveryTimeType[$type];
             } else {
                 $result =  $from.'_'.$to.'_'.$deliveryTimeType[$type];
             }
             return $result;
-        } 
+        }
         if($from != null){
             $result =  $from . "_" .$deliveryTimeType[$type];
         }
-        
+
 
         return $result;
     }
@@ -881,7 +885,7 @@ class FeedConnector implements FeedPlugin {
     {
         if($productImage) {
 
-            return 'http://'.$_SERVER['HTTP_HOST']."/images/products/originals/".$productImage[0];
+            return 'http://'.$_SERVER['HTTP_HOST']."/images/products/originals/".$productImage[0]['image'];
         } else {
 
             return 'no_image';
