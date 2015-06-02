@@ -241,6 +241,18 @@ $header =  "
                     new Ext.form.TextField ({fieldLabel: 'Username', id: 'FEED_USER', value: this.result.FEED_USER}),
                     new Ext.form.TextField ({fieldLabel: 'Password', id: 'FEED_PASSWORD', inputType: 'password', value: this.result.FEED_PASSWORD}),
                     new Ext.form.TextField ({fieldLabel: 'Secret'  , id: 'FEED_SECRET', value: this.result.FEED_SECRET}),
+                    {xtype: 'box', autoEl: {cn: '<br><h1>• Tracking Pixel: </h1>'}},
+                    new Ext.form.NumberField({fieldLabel: 'Client Id', inputType: 'numberfield', id: 'FEED_CLIENT_NUMBER', value: this.result.FEED_CLIENT_NUMBER}),
+
+                    new Ext.form.Checkbox({
+                        id: 'FEED_TRACKING_PIXEL_STATUS',
+                        fieldLabel: 'Tracking pixel',
+                        uncheckedValue: 'false',
+                        boxLabel: 'Enable',
+                        name: 'FEED_TRACKING_PIXEL_STATUS',
+                        inputValue: 'Y',
+                        checked : this.result.FEED_TRACKING_PIXEL_STATUS
+                    }),
                     new Ext.form.ComboBox({
                         id: 'FEED_TAX_ZONE2',
                         hiddenName: 'FEED_TAX_ZONE',
@@ -307,18 +319,10 @@ $header =  "
 ";
 
 $footer = "
-                    {xtype: 'box', autoEl: {cn: '<br><h1>• Tracking Pixel: </h1>'}},
-                    new Ext.form.NumberField({fieldLabel: 'Client Id', inputType: 'numberfield', id: 'FEED_CLIENT_NUMBER', value: this.result.FEED_CLIENT_NUMBER}),
 
-                    new Ext.form.Checkbox({
-                        id: 'FEED_TRACKING_PIXEL_STATUS',
-                        fieldLabel: 'Tracking pixel',
-                        uncheckedValue: 'false',
-                        boxLabel: 'Enable',
-                        name: 'FEED_TRACKING_PIXEL_STATUS',
-                        inputValue: 'Y',
-                        checked : this.result.FEED_TRACKING_PIXEL_STATUS
-                    })
+                 {text: 'separator above'}
+
+
                 );
 
                 this.doLayout();

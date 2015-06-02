@@ -22,7 +22,7 @@
              * @var $oFeed Feed
              */
             $oFeed = Feed::getInstance($sPluginPath);
-            $request = $_REQUEST['feed'];
+            $request = $_REQUEST['dataFeed'];
             $response = $oFeed->dispatch($request);
             if ($request["fnc"] != "getFeed") {
                 $response = (is_null(json_decode($response))) ? $response : json_decode($response);
