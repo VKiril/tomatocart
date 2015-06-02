@@ -939,7 +939,11 @@ class FeedConnector implements FeedPlugin {
      */
     public function getBridgeUrl()
     {
-        return dirname(dirname($_SERVER['HTTP_REFERER']));
+        $host =   $_SERVER['HTTP_HOST'];
+        $protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
+        $file = '/feed.php';
+        
+        return $protocol.$host.$file;
     }
 
 
