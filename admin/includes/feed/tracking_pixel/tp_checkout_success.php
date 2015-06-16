@@ -1,43 +1,31 @@
 <?php
-	require_once DIR_FS_CATALOG . "admin/includes/feed/config/Config.php";
 
-    global $osC_Database;
-    $db = $osC_Database ;
-    $result = $db->query("SELECT configuration_value FROM ".TABLE_CONFIGURATION." WHERE configuration_key = 'FEED_TRACKING_PIXEL_STATUS'")->execute();
-    $pixelActive = $result->fields['configuration_value'];
-    if ($pixelActive === 'Y'){ // && isset($_COOKIE['_fr'])) {
-		$config = new Config();
-		//$config->iniParameters();
+if(isset($products_array)){
+    require_once DIR_FS_CATALOG . "admin/includes/feed/config/Config.php";
 
-        $result = $db->query("SELECT configuration_value FROM ".TABLE_CONFIGURATION." WHERE configuration_key = 'FEED_CLIENT_ID'")->execute();
-        $feedClientId = $result->fields['configuration_value'];
-        $result = $db->query("SELECT value FROM ".TABLE_ORDERS_TOTAL." WHERE orders_id = ".$orders_id." AND title = 'Total:'")->execute();
-        $orderSum = $result->fields['value'];
+    $config = new Config();
+    $tp = $config->getTrackingPixelStatus();
+    $pixelActive = $tp[0]["configuration_value"];
 
-        $result  =	$db->query(
-			"SELECT o.currency,
-					c.currencies_id
-			FROM ".TABLE_ORDERS." o
+    if ($pixelActive == 'Y'){ // && isset($_COOKIE['_fr'])) {
+        $config = new Config();
+        $feedClientId = $config->getClientId();
+        $orders_id = $config->getOrderId();
+        $orderSum = $config->getOrderTotalValues($orders_id);
+        $currency = $config->getCurrency($orders_id);
+        $productsData = $config->getOrdersProducts($currency, $orders_id);
+        $products = "";
+        $flag  = 0 ;
+        foreach ($productsData as $key=>$product) {
+            if($flag == 0){
+                $flag = 1 ;
+                $products .= "product_code_".($key+1)."=".$product["products_id"] . "sum_".($key+1)."=".$product["final_price"] . "qty_".($key+1)."=".$product["products_quantity"];
+            } else {
+                $products .= ";product_code_".($key+1)."=".$product["products_id"] . "sum_".($key+1)."=".$product["final_price"] . "qty_".($key+1)."=".$product["products_quantity"];
+            }
+        }
 
-			LEFT JOIN ".TABLE_CURRENCIES." c
-			ON (c.code = o.currency)
-
-			WHERE o.orders_id = ".$orders_id
-		)->execute();
-
-        $currency = $result->fields['currency'];
-
-		$products = '';
-
-		$productsData = $config->getOrdersProducts($result->fields['currencies_id'], $orders_id, false, true);
-        //var_dump($productsData);die;
-		foreach ($productsData as $product) {
-			//$tax = zen_get_tax_rate($product['tax_class_id'], $config->taxZone['zone_country_id'], $config->taxZone['zone_id']);
-			$price = $product['product']['price'];
-            $quantity = $product['product']['qty'] ;
-            $products .= $product['attributes']['ModelOwn']."=".$price."=".$quantity.";";
-		}
-?>
+        ?>
         <script type="text/javascript">
             var _feeparams = _feeparams || new Object();
             //Required clientId
@@ -59,7 +47,6 @@
             //Additional parameters
             _feeparams.sparam = '';
             (function () {
-                //console.log(_feeparams);
                 var head = document.getElementsByTagName('head')[0];
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
@@ -67,6 +54,9 @@
                 // fire the loading
                 head.appendChild(script);
             })();
-			console.log(_feeparams);
         </script>
-<?php } ?>
+    <?php
+    }
+
+}
+

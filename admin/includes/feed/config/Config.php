@@ -115,5 +115,93 @@ class Config {
         }
         echo 'inserted';
     }
+
+    public function getOrdersProducts($currency, $orders_id){
+        global $osC_Database ;
+        $query = "select op.products_id, op.products_quantity, op.final_price from " . TABLE_ORDERS_PRODUCTS . " op where op.orders_id = ".$orders_id;
+        $select = $osC_Database->query($query);
+        $select->execute();
+        $products = $this->fetch($select);
+
+        return $products ;
+    }
+
+    public function getTrackingPixelStatus()
+    {
+        global $osC_Database;
+        $db = $osC_Database ;
+        $query = "select c.configuration_value from ".TABLE_CONFIGURATION. " c WHERE  c.configuration_key like '%FEED_TRACKING_PIXEL%' " ;
+        $buff = $db->query($query);
+        $buff->execute();
+        $result = $this->fetch($buff);
+
+        return $result ;
+    }
+
+    /**
+     *
+     * the same steps like at symfony
+     */
+    function fetch($query){
+        $temp = array();
+        $temp[] = $query->toArray();
+        do {
+            $buff = $query->next();
+            if($buff){
+                $temp[] = $buff ;
+
+            } else {
+                break ;
+            }
+        } while ($buff);
+
+        return $temp ;
+    }
+
+    public function getClientId(){
+        global $osC_Database;
+        $query = "SELECT t.configuration_value FROM  ".TABLE_CONFIGURATION."  t  WHERE t.configuration_key like '%FEED_CLIENT_NUMBER%'";
+        $result = $osC_Database->query($query);
+        $result->execute();
+        $id = $this->fetch($result);
+
+        return $id[0]["configuration_value"];
+    }
+
+    public function getOrderTotalValues($orders_id)
+    {
+        global $osC_Database;
+        $result = $osC_Database->query("SELECT ot.value FROM ".TABLE_ORDERS_TOTAL." ot WHERE ot.orders_id = ".$orders_id." AND ot.title = 'Total:'");
+        $result->execute();
+        $value = $this->fetch($result);
+
+        return $value[0]['value'];
+    }
+
+    public function getOrderId()
+    {
+        global $osC_Database ;
+        $query = "SELECT o.orders_id from ".TABLE_ORDERS." o ORDER BY o.orders_id DESC " ;
+        $result = $osC_Database->query($query);
+        $order =  $this->fetch($result);
+
+        return $order[0]['orders_id'];
+    }
+
+    public function getCurrency($orders_id)
+    {
+        global $osC_Database ;
+        $query  =	$osC_Database->query(
+            "SELECT o.currency
+			 FROM ".TABLE_ORDERS." o
+			 WHERE o.orders_id = ".$orders_id);
+        $query->execute();
+        $currency = $this->fetch($query);
+        $currency = $currency[0]['currency'];
+
+        return $currency ;
+    }
+
+
 }
 
